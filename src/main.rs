@@ -11,9 +11,11 @@ async fn main() {
     let mut rdr = csv::ReaderBuilder::new()
         .trim(Trim::All)
         .from_reader(io::stdin());
+    let mut raw_record = csv::StringRecord::new();
+    let headers = rdr.headers().unwrap().clone();
 
-    for result in rdr.deserialize() {
-        let record: Transactions = result.unwrap();
+    while rdr.read_record(&mut raw_record).unwrap() {
+        let record: Transactions = raw_record.deserialize(Some(&headers)).unwrap();
         println!("{:?}", record);
     }
 
