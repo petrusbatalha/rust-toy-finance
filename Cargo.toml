@@ -1,0 +1,13 @@
+[package]
+name = "toy-finance"
+version = "0.1.0"
+authors = ["Petrus Batalha Leite Araujo Marques <Petrus.Batalha1@ibm.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+csv = "1.1"
+serde_json = "1.0.64"
+serde = { version = "1.0.126", features = ["derive"] }
+tokio = { version = "1.7", features = ["full"] }
