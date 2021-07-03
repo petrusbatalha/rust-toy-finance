@@ -1,8 +1,8 @@
 use crate::traits::TransactionDB;
-use crate::types::{Transaction, ClientAccount};
-use sled_extensions::DbExt;
-use sled_extensions::bincode::Tree;
+use crate::types::{ClientAccount, Transaction};
 use csv::WriterBuilder;
+use sled_extensions::bincode::Tree;
+use sled_extensions::DbExt;
 use std::io;
 
 pub struct SledAdapter {
@@ -15,12 +15,13 @@ impl SledAdapter {
         let sled_db = sled_extensions::Config::new()
             .temporary(true)
             .path("./sled_data")
-            .open().expect("Failed to open sled.");
+            .open()
+            .expect("Failed to open sled.");
         let transactions = sled_db.open_bincode_tree("transactions").unwrap();
         let accounts = sled_db.open_bincode_tree("accounts").unwrap();
         SledAdapter {
             transactions,
-            accounts
+            accounts,
         }
     }
 }
@@ -28,11 +29,15 @@ impl SledAdapter {
 impl TransactionDB for SledAdapter {
     type DbError = sled_extensions::Error;
     fn add_account(&mut self, client_id: u16, client_account: ClientAccount) {
-        self.accounts.insert(client_id.as_ne_bytes(), client_account).unwrap();
+        self.accounts
+            .insert(client_id.as_ne_bytes(), client_account)
+            .unwrap();
     }
 
     fn add_transaction(&mut self, tx_id: u32, transaction: Transaction) {
-        self.transactions.insert(tx_id.as_ne_bytes(), transaction).unwrap();
+        self.transactions
+            .insert(tx_id.as_ne_bytes(), transaction)
+            .unwrap();
     }
 
     fn get_transaction(&mut self, tx_id: u32) -> Option<Transaction> {
@@ -47,9 +52,13 @@ impl TransactionDB for SledAdapter {
         let mut wtr = WriterBuilder::new()
             .has_headers(true)
             .from_writer(io::stdout());
-        self.accounts.iter().values().flat_map(|value| value.ok())
-            .for_each(|clients| wtr.serialize(clients).expect("Failed to write csv to stdout."));
-            // .for_each();
-
+        self.accounts
+            .iter()
+            .values()
+            .flat_map(|value| value.ok())
+            .map(|client_account| client_account.into_formatted_f32())
+            .for_each(|client_account| {
+                wtr.serialize(client_account).expect("Failed to write csv to stdout.")
+            });
     }
 }

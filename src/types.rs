@@ -1,5 +1,4 @@
-use serde::{Serialize, Deserialize, Deserializer};
-use serde::de::Error;
+use serde::{Deserialize, Deserializer, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ClientAccount {
@@ -10,9 +9,13 @@ pub struct ClientAccount {
     pub locked: bool,
 }
 
-pub enum Action {
-    NewTransaction(Transaction),
-    DisplayTransaction,
+impl ClientAccount {
+    pub fn into_formatted_f32(mut self) -> Self {
+        self.available = format!("{:.4}", self.available).parse().unwrap();
+        self.held = format!("{:.4}", self.held).parse().unwrap();
+        self.total = format!("{:.4}", self.total).parse().unwrap();
+        self
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -21,7 +24,12 @@ pub struct Transaction {
     pub transaction_type: TransactionType,
     pub client: u16,
     pub tx: u32,
-    pub amount: Option<f32>
+    pub amount: Option<f32>,
+}
+
+pub enum Action {
+    NewTransaction(Transaction),
+    DisplayTransaction,
 }
 
 #[derive(Debug, Serialize)]
@@ -40,7 +48,8 @@ pub enum TransactionType {
 
 impl<'de> Deserialize<'de> for TransactionType {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
+    where
+        D: Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
         match s.as_str() {
@@ -49,7 +58,7 @@ impl<'de> Deserialize<'de> for TransactionType {
             "resolve" => Ok(TransactionType::Resolve),
             "withdrawal" => Ok(TransactionType::Withdrawal),
             "chargeback" => Ok(TransactionType::Chargeback),
-            _ => Err(D::Error::custom("Failed to parse transaction.")),
+            _ => Err(serde::de::Error::custom("Failed to parse transaction.")),
         }
     }
 }

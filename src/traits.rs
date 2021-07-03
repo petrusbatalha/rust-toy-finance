@@ -1,4 +1,4 @@
-use crate::types::{Transaction, ClientAccount};
+use crate::types::{ClientAccount, Transaction};
 
 pub trait TransactionHandler {
     fn resolve(&self, tx_id: u32);
@@ -16,4 +16,3 @@ pub trait TransactionDB {
     fn get_account(&mut self, client_id: u16) -> Option<ClientAccount>;
     fn display_all_accounts(&self);
 }
-

@@ -1,8 +1,7 @@
 type, client, tx, amount
-deposit, 1, 1, 2.0
-deposit, 2, 2, 2.0
-deposit, 3, 3, 2.0
+deposit, 1, 1, 2.555510
+deposit, 2, 2, 2.555510
+deposit, 3, 3, 2.555510
 withdrawal, 1, 4, 1.0
 withdrawal, 2, 5, 1.0
 withdrawal, 3, 6, 1.0
-
