@@ -25,12 +25,20 @@ pub struct Transaction {
     pub client: u16,
     pub tx: u32,
     pub amount: Option<f32>,
+    pub dispute: Option<bool>,
 }
 
 pub enum Action {
     NewTransaction(Transaction),
     DisplayTransaction,
 }
+
+// pub enum TransactionStatus {
+//     Resolve,
+//     Withdrawal,
+//     Chargeback,
+//     None,
+// }
 
 #[derive(Debug, Serialize)]
 pub enum TransactionType {

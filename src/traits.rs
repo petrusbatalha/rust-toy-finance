@@ -1,9 +1,9 @@
 use crate::types::{ClientAccount, Transaction};
 
 pub trait TransactionHandler {
-    fn resolve(&self, tx_id: u32);
-    fn lock(&self, tx_id: u32);
-    fn chargeback(&self, tx_id: u32);
+    fn resolve(&mut self, tx_id: u32);
+    fn dispute(&mut self, tx_id: u32);
+    fn chargeback(&mut self, tx_id: u32);
     fn deposit(&mut self, transaction: Transaction);
     fn withdrawal(&mut self, transaction: Transaction);
 }
