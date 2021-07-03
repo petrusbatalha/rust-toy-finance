@@ -1,57 +1,50 @@
 use serde::{Serialize, Deserialize, Deserializer};
-use std::borrow::Cow;
-use serde::de::{IntoDeserializer, Error};
+use serde::de::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Transactions<'a> {
+pub struct ClientAccount {
+    pub(crate) client: u16,
+    pub available: f32,
+    pub held: f32,
+    pub total: f32,
+    pub locked: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Transaction {
     #[serde(rename = "type")]
-    #[serde(borrow)]
-    transaction_type: TransactionType<'a>,
-    client: u16,
-    tx: u32,
-    amount: Option<f64>
+    pub transaction_type: TransactionType,
+    pub client: u16,
+    pub tx: u32,
+    pub amount: Option<f32>
 }
 
 #[derive(Debug, Serialize)]
-pub enum TransactionType<'a> {
+pub enum TransactionType {
     #[serde(rename = "dispute")]
-    #[serde(borrow)]
-    Dispute(Cow<'a, str>,),
+    Dispute,
     #[serde(rename = "deposit")]
-    #[serde(borrow)]
-    Deposit(Cow<'a, str>,),
+    Deposit,
     #[serde(rename = "resolve")]
-    #[serde(borrow)]
-    Resolve(Cow<'a, str>,),
+    Resolve,
     #[serde(rename = "withdrawal")]
-    #[serde(borrow)]
-    Withdraw(Cow<'a, str>,),
+    Withdrawal,
     #[serde(rename = "chargeback")]
-    #[serde(borrow)]
-    Chargeback(Cow<'a, str>,),
+    Chargeback,
 }
 
-impl<'de, 'a> Deserialize<'de> for TransactionType<'a> {
+impl<'de> Deserialize<'de> for TransactionType {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where D: Deserializer<'de>
     {
         let s = String::deserialize(deserializer)?;
         match s.as_str() {
-            "dispute" => Ok(TransactionType::Dispute(Cow::from(s))),
-            "deposit" => Ok(TransactionType::Deposit(Cow::from(s))),
-            "resolve" => Ok(TransactionType::Resolve(Cow::from(s))),
-            "withdrawal" => Ok(TransactionType::Withdraw(Cow::from(s))),
-            "chargeback" => Ok(TransactionType::Chargeback(Cow::from(s))),
+            "dispute" => Ok(TransactionType::Dispute),
+            "deposit" => Ok(TransactionType::Deposit),
+            "resolve" => Ok(TransactionType::Resolve),
+            "withdrawal" => Ok(TransactionType::Withdrawal),
+            "chargeback" => Ok(TransactionType::Chargeback),
             _ => Err(D::Error::custom("Failed to parse transaction.")),
         }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Output {
-    client: u16,
-    available: f32,
-    held: f32,
-    total: f32,
-    locked: bool,
 }
