@@ -53,6 +53,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/src/sled_adapter.rs">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/src/traits.rs">
           <value>
             <set />

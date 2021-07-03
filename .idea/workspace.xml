@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BranchesTreeState">
-    <expand>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-    </expand>
+    <expand />
     <select />
   </component>
   <component name="CargoProjects">
@@ -32,7 +27,7 @@
       <change afterPath="$PROJECT_DIR$/../saga/realworld-balance/src/application/ports/port_in/mod.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../saga/realworld-balance/src/application/ports/port_out/mod.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/file.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/map_adapter.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sled_adapter.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/traits.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/transaction_service.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/types.rs" afterDir="false" />
@@ -111,7 +106,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1625231469373</updated>
-      <workItem from="1625231470742" duration="31015000" />
+      <workItem from="1625231470742" duration="33446000" />
     </task>
     <servers />
   </component>
@@ -121,19 +116,65 @@
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
+        <entry key="1">
+          <value>
+            <State>
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="structure">
+                    <value>
+                      <list>
+                        <option value="dir:/Users/petrusbatalha/projects/rust/toy-finance" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="1" value="TOOL_WINDOW" />
+      </map>
+    </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser" timestamp="1625340769793">
+    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser" timestamp="1625343250244">
       <screen x="0" y="25" width="1440" height="776" />
     </state>
     <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser/0.25.1440.775@0.25.1440.775" timestamp="1625339171103" />
-    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser/0.25.1440.776@0.25.1440.776" timestamp="1625340769793" />
+    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser/0.25.1440.776@0.25.1440.776" timestamp="1625343250244" />
+    <state x="100" y="125" width="1240" height="575" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1625344089975">
+      <screen x="0" y="25" width="1440" height="776" />
+    </state>
+    <state x="100" y="125" width="1240" height="575" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.25.1440.776@0.25.1440.776" timestamp="1625344089975" />
   </component>
 </project>

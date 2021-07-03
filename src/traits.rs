@@ -4,8 +4,8 @@ pub trait TransactionHandler {
     fn resolve(&self, tx_id: u32);
     fn lock(&self, tx_id: u32);
     fn chargeback(&self, tx_id: u32);
-    fn deposit(&self, client_id: u16);
-    fn withdrawal(&self, client_id: u16);
+    fn deposit(&mut self, transaction: Transaction);
+    fn withdrawal(&mut self, transaction: Transaction);
 }
 
 pub trait TransactionDB {

@@ -1,9 +1,9 @@
 use crate::traits::TransactionDB;
 use crate::types::{Transaction, ClientAccount};
-use std::sync::Arc;
-use std::collections::HashMap;
-use sled_extensions::{Db, DbExt};
+use sled_extensions::DbExt;
 use sled_extensions::bincode::Tree;
+use csv::WriterBuilder;
+use std::io;
 
 pub struct SledAdapter {
     accounts: Tree<ClientAccount>,
@@ -12,7 +12,8 @@ pub struct SledAdapter {
 
 impl SledAdapter {
     pub(crate) fn new() -> SledAdapter {
-        let sled_db = sled_extensions::Config::default()
+        let sled_db = sled_extensions::Config::new()
+            .temporary(true)
             .path("./sled_data")
             .open().expect("Failed to open sled.");
         let transactions = sled_db.open_bincode_tree("transactions").unwrap();
@@ -43,6 +44,12 @@ impl TransactionDB for SledAdapter {
     }
 
     fn display_all_accounts(&self) {
-        self.accounts.iter().values().for_each((|clients| println!("{:?}", clients)));
+        let mut wtr = WriterBuilder::new()
+            .has_headers(true)
+            .from_writer(io::stdout());
+        self.accounts.iter().values().flat_map(|value| value.ok())
+            .for_each(|clients| wtr.serialize(clients).expect("Failed to write csv to stdout."));
+            // .for_each();
+
     }
 }

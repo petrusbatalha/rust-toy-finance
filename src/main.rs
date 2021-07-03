@@ -4,19 +4,14 @@
 mod types;
 mod transaction_service;
 mod traits;
-mod map_adapter;
+mod sled_adapter;
 
 use std::io;
 use csv::Trim;
 use tokio::sync::mpsc;
-use crate::types::{Transaction, TransactionType, Action};
+use crate::types::{Transaction, Action};
 use crate::transaction_service::TransactionService;
-use crate::map_adapter::SledAdapter;
-use crate::traits::TransactionDB;
-use std::thread::sleep;
-use std::time::Duration;
-use tokio::sync::mpsc::error::SendError;
-use std::sync::Arc;
+use crate::sled_adapter::SledAdapter;
 
 #[tokio::main]
 async fn main() {
