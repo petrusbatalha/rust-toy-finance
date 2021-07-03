@@ -10,6 +10,11 @@ pub struct ClientAccount {
     pub locked: bool,
 }
 
+pub enum Action {
+    NewTransaction(Transaction),
+    DisplayTransaction,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Transaction {
     #[serde(rename = "type")]
