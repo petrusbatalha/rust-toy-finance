@@ -1,5 +1,5 @@
-#![feature(in_band_lifetimes)]
-#![feature(num_as_ne_bytes)]
+#[macro_use]
+extern crate log;
 
 mod map_adapter;
 mod traits;
@@ -10,17 +10,22 @@ use crate::map_adapter::MapAdapter;
 use crate::transaction_service::TransactionService;
 use crate::types::{Action, Transaction};
 use csv::Trim;
-use std::io;
+use std::{io, env};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
+
+    let args: Vec<String> = env::args().collect();
+    let path = &args[1];
+
     let mut rdr = csv::ReaderBuilder::new()
         .trim(Trim::All)
         .flexible(true)
-        .from_reader(io::stdin());
+        .from_path(path).unwrap();
 
     let mut raw_record = csv::StringRecord::new();
     let headers = rdr.headers().unwrap().clone();
@@ -36,13 +41,11 @@ async fn main() {
     let must_stop = finished.clone();
     tokio::spawn(async move {
         loop {
+
             while let Some(status) = status_receiver.recv().await {
-                match status {
-                        Action::DisplayTransactionFinished => {
-                            must_stop.store(true, Ordering::Relaxed);
-                        }
-                        _ => {}
-                    }
+                if let Action::DisplayTransactionFinished = status {
+                    must_stop.store(true, Ordering::Relaxed);
+                }
             }
         }
     });
@@ -57,7 +60,7 @@ async fn main() {
         match transaction_sender.send(Action::NewTransaction(record)).await {
             Ok(_) => {}
             Err(err) => {
-                println!("Failed to send transaction {}", err.to_string());
+                error!("Failed to send transaction {}", err.to_string());
             }
         };
     }

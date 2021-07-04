@@ -33,7 +33,7 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T
                         self.db_adapter.display_all_accounts();
                         status_sender.send(Action::DisplayTransactionFinished).await.ok();
                     }
-                    _ => {}
+                    Action::DisplayTransactionFinished => {}
                 }
             }
         }
@@ -55,7 +55,7 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
     }
 
     fn dispute(&mut self, transaction: Transaction) {
-        let id = transaction.tx.clone();
+        let id = transaction.tx;
         match self.db_adapter.get_transaction(id) {
             None => {}
             Some(transaction_to_be_disputed) => {
@@ -90,7 +90,7 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
         match client_account {
             None => {
                 self.db_adapter.add_account(
-                    transaction.client.clone(),
+                    transaction.client,
                     ClientAccount {
                         client: transaction.client,
                         available: transaction.amount.unwrap(),
@@ -101,7 +101,7 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
                 );
             }
             Some(mut client_account) => {
-                if client_account.locked == false {
+                if !client_account.locked {
                     client_account.total += transaction.amount.unwrap();
                     client_account.available += transaction.amount.unwrap();
                     self.db_adapter.add_account(transaction.client, client_account);
@@ -116,7 +116,7 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
         match client_account {
             None => {}
             Some(mut client_account) => {
-                if client_account.locked == false
+                if !client_account.locked
                     && client_account.available >= transaction.amount.unwrap() {
                     client_account.total -= transaction.amount.unwrap();
                     client_account.available -= transaction.amount.unwrap();

@@ -37,7 +37,7 @@ impl TransactionDB for MapAdapter {
         match self.under_dispute.remove(&tx_id) {
             Some(_) => {},
             None => {
-                println!("Failed to remove transaction from dispute");
+                warn!("Failed to remove transaction from dispute");
             }
         };
     }
@@ -65,7 +65,7 @@ impl TransactionDB for MapAdapter {
         self.accounts
             .iter()
             .for_each(|client_account| {
-                wtr.serialize(client_account.1.to_owned().into_formatted_f32()).expect("Failed to write csv to stdout.")
+                wtr.serialize(client_account.1.clone().into_formatted_f32()).expect("Failed to write csv to stdout.")
             });
     }
 }
