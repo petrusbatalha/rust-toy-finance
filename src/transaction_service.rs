@@ -12,26 +12,27 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T
         loop {
             while let Some(action) = rcv.recv().await {
                 match action {
-                        Action::NewTransaction(transaction) => match transaction.transaction_type {
-                            TransactionType::Dispute => {
-                                self.dispute(transaction);
-                            }
-                            TransactionType::Deposit => {
-                                self.deposit(transaction);
-                            }
-                            TransactionType::Resolve => {
-                                self.resolve(transaction);
-                            }
-                            TransactionType::Withdrawal => {
-                                self.withdrawal(transaction);
-                            }
-                            TransactionType::Chargeback => {
-                                self.chargeback(transaction)
-                            }
-                        },
+                    Action::NewTransaction(transaction) => match transaction.transaction_type {
+                        TransactionType::Dispute => {
+                            self.dispute(transaction);
+                        }
+                        TransactionType::Deposit => {
+                            self.deposit(transaction);
+                        }
+                        TransactionType::Resolve => {
+                            self.resolve(transaction);
+                        }
+                        TransactionType::Withdrawal => {
+                            self.withdrawal(transaction);
+                        }
+                        TransactionType::Chargeback => self.chargeback(transaction),
+                    },
                     Action::DisplayTransaction => {
                         self.db_adapter.display_all_accounts();
-                        status_sender.send(Action::DisplayTransactionFinished).await.ok();
+                        status_sender
+                            .send(Action::DisplayTransactionFinished)
+                            .await
+                            .ok();
                     }
                     Action::DisplayTransactionFinished => {}
                 }
@@ -45,11 +46,12 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
 {
     fn resolve(&mut self, transaction: Transaction) {
         let id = transaction.tx;
-        if  let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
+        if let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
             let mut client_account = self.db_adapter.get_account(dispute.client).unwrap();
             client_account.available += dispute.amount.unwrap();
             client_account.held -= dispute.amount.unwrap();
-            self.db_adapter.add_account(client_account.client, client_account);
+            self.db_adapter
+                .add_account(client_account.client, client_account);
             self.db_adapter.remove_transaction_from_dispute(id);
         }
     }
@@ -59,26 +61,31 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
         match self.db_adapter.get_transaction(id) {
             None => {}
             Some(transaction_to_be_disputed) => {
-                let mut client_account =
-                            self.db_adapter.get_account(transaction_to_be_disputed.client).unwrap();
-                        client_account.available -= transaction_to_be_disputed.amount.unwrap();
-                        client_account.held += transaction_to_be_disputed.amount.unwrap();
-                        self.db_adapter.add_account(client_account.client, client_account);
-                        self.db_adapter.add_transaction_under_dispute(id, transaction_to_be_disputed);
-                    }
+                let mut client_account = self
+                    .db_adapter
+                    .get_account(transaction_to_be_disputed.client)
+                    .unwrap();
+                client_account.available -= transaction_to_be_disputed.amount.unwrap();
+                client_account.held += transaction_to_be_disputed.amount.unwrap();
+                self.db_adapter
+                    .add_account(client_account.client, client_account);
+                self.db_adapter
+                    .add_transaction_under_dispute(id, transaction_to_be_disputed);
             }
+        }
     }
 
     fn chargeback(&mut self, transaction: Transaction) {
         let id = transaction.tx;
-        if  let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
+        if let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
             match self.db_adapter.get_account(transaction.client) {
                 None => {}
                 Some(mut client_account) => {
                     client_account.held -= dispute.amount.unwrap();
                     client_account.total -= dispute.amount.unwrap();
                     client_account.locked = true;
-                    self.db_adapter.add_account(client_account.client, client_account);
+                    self.db_adapter
+                        .add_account(client_account.client, client_account);
                     self.db_adapter.remove_transaction_from_dispute(id)
                 }
             }
@@ -104,7 +111,8 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
                 if !client_account.locked {
                     client_account.total += transaction.amount.unwrap();
                     client_account.available += transaction.amount.unwrap();
-                    self.db_adapter.add_account(transaction.client, client_account);
+                    self.db_adapter
+                        .add_account(transaction.client, client_account);
                 }
             }
         }
@@ -116,11 +124,12 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
         match client_account {
             None => {}
             Some(mut client_account) => {
-                if !client_account.locked
-                    && client_account.available >= transaction.amount.unwrap() {
+                if !client_account.locked && client_account.available >= transaction.amount.unwrap()
+                {
                     client_account.total -= transaction.amount.unwrap();
                     client_account.available -= transaction.amount.unwrap();
-                    self.db_adapter.add_account(transaction.client, client_account);
+                    self.db_adapter
+                        .add_account(transaction.client, client_account);
                     self.db_adapter.add_transaction(transaction.tx, transaction);
                 }
             }

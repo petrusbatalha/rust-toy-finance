@@ -35,7 +35,7 @@ impl TransactionDB for MapAdapter {
 
     fn remove_transaction_from_dispute(&mut self, tx_id: u32) {
         match self.under_dispute.remove(&tx_id) {
-            Some(_) => {},
+            Some(_) => {}
             None => {
                 warn!("Failed to remove transaction from dispute");
             }
@@ -47,7 +47,7 @@ impl TransactionDB for MapAdapter {
     }
 
     fn get_transaction_in_dispute(&mut self, tx_id: u32) -> Option<Transaction> {
-       self.under_dispute.get(&tx_id).cloned()
+        self.under_dispute.get(&tx_id).cloned()
     }
 
     fn get_transaction(&mut self, tx_id: u32) -> Option<Transaction> {
@@ -62,10 +62,9 @@ impl TransactionDB for MapAdapter {
         let mut wtr = WriterBuilder::new()
             .has_headers(true)
             .from_writer(io::stdout());
-        self.accounts
-            .iter()
-            .for_each(|client_account| {
-                wtr.serialize(client_account.1.clone().into_formatted_f32()).expect("Failed to write csv to stdout.")
-            });
+        self.accounts.iter().for_each(|client_account| {
+            wtr.serialize(client_account.1.clone().into_formatted_f32())
+                .expect("Failed to write csv to stdout.")
+        });
     }
 }

@@ -12,7 +12,7 @@ pub trait TransactionDB {
     fn add_account(&mut self, client_id: u16, client_account: ClientAccount);
     fn add_transaction(&mut self, tx_id: u32, transaction: Transaction);
     fn remove_transaction_from_dispute(&mut self, tx_id: u32);
-    fn add_transaction_under_dispute(&mut self, tx_id: u32,  transaction: Transaction);
+    fn add_transaction_under_dispute(&mut self, tx_id: u32, transaction: Transaction);
     fn get_transaction_in_dispute(&mut self, tx_id: u32) -> Option<Transaction>;
     fn get_transaction(&mut self, tx_id: u32) -> Option<Transaction>;
     fn get_account(&mut self, client_id: u16) -> Option<ClientAccount>;
