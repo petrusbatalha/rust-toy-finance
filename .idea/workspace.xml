@@ -31,7 +31,6 @@
       <change afterPath="$PROJECT_DIR$/src/traits.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/transaction_service.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/types.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,7 +106,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1625231469373</updated>
-      <workItem from="1625231470742" duration="48048000" />
+      <workItem from="1625231470742" duration="55038000" />
     </task>
     <servers />
   </component>
@@ -171,11 +170,15 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser" timestamp="1625351678568">
-      <screen x="0" y="25" width="1440" height="775" />
+    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser" timestamp="1625364056085">
+      <screen x="0" y="25" width="1440" height="776" />
     </state>
     <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser/0.25.1440.775@0.25.1440.775" timestamp="1625351678568" />
-    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser/0.25.1440.776@0.25.1440.776" timestamp="1625349545302" />
+    <state x="533" y="132" key="#com.intellij.ide.util.MemberChooser/0.25.1440.776@0.25.1440.776" timestamp="1625364056085" />
+    <state x="458" y="163" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1625367809890">
+      <screen x="0" y="25" width="1440" height="775" />
+    </state>
+    <state x="458" y="163" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.25.1440.775@0.25.1440.775" timestamp="1625367809890" />
     <state x="100" y="125" width="1240" height="575" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1625344089975">
       <screen x="0" y="25" width="1440" height="776" />
     </state>

@@ -8,6 +8,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/csv_transactions.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/file.csv">
           <value>
             <set />
@@ -74,6 +79,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/test.sh">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/transactions-result.csv">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/transactions.csv">
           <value>
             <set />
           </value>

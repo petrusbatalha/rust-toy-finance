@@ -18,14 +18,13 @@ impl ClientAccount {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Transaction {
     #[serde(rename = "type")]
     pub transaction_type: TransactionType,
     pub client: u16,
     pub tx: u32,
     pub amount: Option<f32>,
-    pub dispute: Option<bool>,
 }
 
 pub enum Action {
@@ -34,7 +33,7 @@ pub enum Action {
     DisplayTransaction,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 pub enum TransactionType {
     #[serde(rename = "dispute")]
     Dispute,

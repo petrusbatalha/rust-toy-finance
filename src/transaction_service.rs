@@ -14,19 +14,19 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T
                 match action {
                         Action::NewTransaction(transaction) => match transaction.transaction_type {
                             TransactionType::Dispute => {
-                                self.dispute(transaction.tx);
+                                self.dispute(transaction);
                             }
                             TransactionType::Deposit => {
                                 self.deposit(transaction);
                             }
                             TransactionType::Resolve => {
-                                self.resolve(transaction.tx);
+                                self.resolve(transaction);
                             }
                             TransactionType::Withdrawal => {
                                 self.withdrawal(transaction);
                             }
                             TransactionType::Chargeback => {
-                                self.chargeback(transaction.tx)
+                                self.chargeback(transaction)
                             }
                         },
                     Action::DisplayTransaction => {
@@ -43,71 +43,46 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T
 impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
     for TransactionService<T>
 {
-    fn resolve(&mut self, tx_id: u32) {
-        match self.db_adapter.get_transaction(tx_id) {
-            None => {}
-            Some(mut transaction) => {
-                match self.db_adapter.get_account(transaction.client) {
-                    None => {}
-                    Some(mut client_account) => {
-                        if let Some(dispute) = transaction.dispute {
-                            if dispute {
-                                client_account.available += transaction.amount.unwrap();
-                                client_account.held -= transaction.amount.unwrap();
-                                transaction.dispute = Some(false);
-                                self.db_adapter.add_account(client_account.client, client_account);
-                                self.db_adapter.add_transaction(tx_id, transaction);
-                            }
-                        }
-                    }
-                };
-            }
-        };
+    fn resolve(&mut self, transaction: Transaction) {
+        let id = transaction.tx;
+        if  let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
+            let mut client_account = self.db_adapter.get_account(dispute.client).unwrap();
+            client_account.available += dispute.amount.unwrap();
+            client_account.held -= dispute.amount.unwrap();
+            self.db_adapter.add_account(client_account.client, client_account);
+            self.db_adapter.remove_transaction_from_dispute(id);
+        }
     }
 
-    fn dispute(&mut self, tx_id: u32) {
-        match self.db_adapter.get_transaction(tx_id) {
+    fn dispute(&mut self, transaction: Transaction) {
+        let id = transaction.tx.clone();
+        match self.db_adapter.get_transaction(id) {
             None => {}
-            Some(mut transaction) => {
-                match self.db_adapter.get_account(transaction.client) {
-                    None => {}
-                    Some(mut client_account) => {
-                        if let Some(dispute) = transaction.dispute {
-                            if !dispute {
-                                client_account.available -= transaction.amount.unwrap();
-                                client_account.held += transaction.amount.unwrap();
-                                transaction.dispute = Some(true);
-                                self.db_adapter.add_account(client_account.client, client_account);
-                                self.db_adapter.add_transaction(tx_id, transaction);
-                            }
-                        }
+            Some(transaction_to_be_disputed) => {
+                let mut client_account =
+                            self.db_adapter.get_account(transaction_to_be_disputed.client).unwrap();
+                        client_account.available -= transaction_to_be_disputed.amount.unwrap();
+                        client_account.held += transaction_to_be_disputed.amount.unwrap();
+                        self.db_adapter.add_account(client_account.client, client_account);
+                        self.db_adapter.add_transaction_under_dispute(id, transaction_to_be_disputed);
                     }
-                };
             }
-        };
     }
 
-    fn chargeback(&mut self, tx_id: u32) {
-        match self.db_adapter.get_transaction(tx_id) {
-            None => {}
-            Some(mut transaction) => {
-                match self.db_adapter.get_account(transaction.client) {
-                    None => {}
-                    Some(mut client_account) => {
-                        if let Some(dispute) = transaction.dispute {
-                            if dispute {
-                                client_account.held -= transaction.amount.unwrap();
-                                client_account.total -= transaction.amount.unwrap();
-                                client_account.locked = true;
-                                transaction.dispute = Some(false);
-                                self.db_adapter.add_account(client_account.client, client_account);
-                                self.db_adapter.add_transaction(tx_id, transaction);
-                            }
-                        }
-                    }
-                };
+    fn chargeback(&mut self, transaction: Transaction) {
+        let id = transaction.tx;
+        if  let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
+            match self.db_adapter.get_account(transaction.client) {
+                None => {}
+                Some(mut client_account) => {
+                    client_account.held -= dispute.amount.unwrap();
+                    client_account.total -= dispute.amount.unwrap();
+                    client_account.locked = true;
+                    self.db_adapter.add_account(client_account.client, client_account);
+                    self.db_adapter.remove_transaction_from_dispute(id)
+                }
             }
-        };
+        }
     }
 
     fn deposit(&mut self, transaction: Transaction) {

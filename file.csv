@@ -89,3 +89,6 @@ withdrawal, 3, 87, 1.0
 withdrawal, 1, 88, 1.0
 withdrawal, 2, 89, 1.0
 withdrawal, 3, 90, 1.0
+deposit, 3, 91, 1000
+dispute, 3, 91
+chargeback, 3, 91

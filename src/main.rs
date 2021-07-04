@@ -11,8 +11,6 @@ use crate::transaction_service::TransactionService;
 use crate::types::{Action, Transaction};
 use csv::Trim;
 use std::io;
-use std::thread::sleep;
-use std::time::Duration;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::mpsc;
@@ -21,6 +19,7 @@ use tokio::sync::mpsc;
 async fn main() {
     let mut rdr = csv::ReaderBuilder::new()
         .trim(Trim::All)
+        .flexible(true)
         .from_reader(io::stdin());
 
     let mut raw_record = csv::StringRecord::new();
@@ -30,7 +29,6 @@ async fn main() {
 
     let db_adapter = SledAdapter::new();
     let transaction_service = TransactionService { db_adapter };
-
 
     let finished = Arc::new(AtomicBool::new(false));
     let (status_sender, mut status_receiver) = mpsc::channel(1);
