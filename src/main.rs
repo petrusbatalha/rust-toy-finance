@@ -12,7 +12,7 @@ use crate::types::{Action, Transaction};
 use csv::Trim;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::{env, io};
+use std::env;
 use tokio::sync::mpsc;
 
 #[tokio::main]

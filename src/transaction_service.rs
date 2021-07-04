@@ -1,4 +1,4 @@
-use crate::traits::{TransactionDB, TransactionHandler};
+use crate::traits::{AccountDB, TransactionDB, TransactionHandler};
 use crate::types::{Action, ClientAccount, Transaction, TransactionType};
 use std::option::Option::Some;
 use tokio::sync::mpsc::{Receiver, Sender};
@@ -7,24 +7,16 @@ pub struct TransactionService<T> {
     pub(crate) db_adapter: T,
 }
 
-impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T> {
+impl<T: 'static + TransactionDB + AccountDB> TransactionService<T> {
     pub async fn receive(mut self, mut rcv: Receiver<Action>, status_sender: Sender<Action>) {
         loop {
             while let Some(action) = rcv.recv().await {
                 match action {
                     Action::NewTransaction(transaction) => match transaction.transaction_type {
-                        TransactionType::Dispute => {
-                            self.dispute(transaction);
-                        }
-                        TransactionType::Deposit => {
-                            self.deposit(transaction);
-                        }
-                        TransactionType::Resolve => {
-                            self.resolve(transaction);
-                        }
-                        TransactionType::Withdrawal => {
-                            self.withdrawal(transaction);
-                        }
+                        TransactionType::Dispute => self.dispute(transaction),
+                        TransactionType::Deposit => self.deposit(transaction),
+                        TransactionType::Resolve => self.resolve(transaction),
+                        TransactionType::Withdrawal => self.withdrawal(transaction),
                         TransactionType::Chargeback => self.chargeback(transaction),
                     },
                     Action::DisplayTransaction => {
@@ -41,12 +33,10 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T
     }
 }
 
-impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
-    for TransactionService<T>
-{
+impl<T: 'static + TransactionDB + AccountDB> TransactionHandler for TransactionService<T> {
     fn resolve(&mut self, transaction: Transaction) {
         let id = transaction.tx;
-        if let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
+        if let Some(dispute) = self.db_adapter.get_transaction_under_dispute(id) {
             let mut client_account = self.db_adapter.get_account(dispute.client).unwrap();
             client_account.available += dispute.amount.unwrap();
             client_account.held -= dispute.amount.unwrap();
@@ -77,7 +67,7 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionHandler
 
     fn chargeback(&mut self, transaction: Transaction) {
         let id = transaction.tx;
-        if let Some(dispute) = self.db_adapter.get_transaction_in_dispute(id) {
+        if let Some(dispute) = self.db_adapter.get_transaction_under_dispute(id) {
             match self.db_adapter.get_account(transaction.client) {
                 None => {}
                 Some(mut client_account) => {
