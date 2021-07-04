@@ -26,6 +26,8 @@ A deposit looks like,
 **Assumptions**  
 If the deposit references a client that does not exist, it will create a new one.
 
+-----
+
 ### Withdrawal
 A withdrawal is a debit to the client's asset account, meaning it decreases the available and
 total funds of the client account.
@@ -38,6 +40,8 @@ A withdrawal looks like,
 **Assumptions**  
 If a client does not have sufficient available funds the withdrawal should fail, and the total amount of funds should not change.  
 If the client of withdrawal does not exist, it will not create a new one.
+
+-----
 
 ### Dispute
 A dispute represents a client's claim that a transaction was erroneous and should be reversed.  
@@ -53,6 +57,8 @@ A dispute looks like,
 A dispute does not state the amount disputed. 
 Instead, a dispute references the transaction that is disputed by ID.  
 If the tx specified by the dispute doesn't exist it will be ignored.
+
+-----
 
 ### Resolve
 A resolve represents a resolution to a dispute, releasing the associated held funds.  
@@ -70,6 +76,8 @@ Like disputes, resolves do not specify an amount.
 Instead, they refer to a transaction that was under dispute by ID. 
 If the tx specified doesn't exist, or the tx isn't under dispute, it will be ignored.
 
+-----
+
 ### Chargeback
 A chargeback is the final state of a dispute and represents the client reversing a transaction. 
 Funds that were held have now been withdrawn.  
@@ -85,6 +93,9 @@ A chargeback looks like,
 Like a dispute, and a resolve a chargeback refers to the transaction by ID (tx) and does not
 specify an amount.
 Like a resolve, if the tx specified doesn't exist, or the tx isn't under dispute, the chargeback will be ignored.
+
+-----
+
 ## Using
 ```
 cargo run --release -- <path_to_csv> > result.csv
@@ -120,6 +131,8 @@ As seen in the diagrams above, the target architecture will be composed of diffe
 A BFF(Back-end for front-end), will receive the transaction intention, respond immediately with the transaction ID and generate a transaction event.
 It will store the transaction ID and the transaction's status as Pending on a KV value store, with a time-to-live set to the business requirement for a transaction to complete.
 
+-----
+
 ### Balance Service
 The core microservice of the solution will be responsible to properly execute the transactions.
 
@@ -138,10 +151,14 @@ The balance table will be consistent with the sum of the transactions for a give
 
 It's the only service that changes the values on the balance and transactions tables.
 
+-----
+
 ### Resolution Service
 It will be the service responsible for finalizing a dispute.
 Either returning a Resolve or a Chargeback.
 Because only the Balance Service is allowed to change values on those tables, the resolution service will create a Resolution Event which will be consumed by the Balance Service.
+
+-----
 
 ### Balance Aggregator
 It will be responsible to do read transactions on the balance table.
