@@ -28,12 +28,12 @@
       <change afterPath="$PROJECT_DIR$/../saga/realworld-balance/src/application/ports/port_out/mod.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/architecture/withdraw-deposit.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deposit-withdrawal.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dispute-resolution.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/map_adapter.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/traits.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/transaction_service.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/types.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_data/deposit-withdrawal.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_data/dispute-resolution.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,6 +85,11 @@
     <property name="org.rust.cargo.project.model.PROJECT_DISCOVERY" value="true" />
     <property name="org.rust.disableDetachedFileInspection/Users/petrusbatalha/projects/rust/toy-finance/src/port/primary/output.rs" value="true" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/test_data" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
@@ -109,7 +114,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1625231469373</updated>
-      <workItem from="1625231470742" duration="69765000" />
+      <workItem from="1625231470742" duration="75461000" />
     </task>
     <servers />
   </component>
