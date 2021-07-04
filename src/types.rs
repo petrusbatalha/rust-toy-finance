@@ -30,15 +30,9 @@ pub struct Transaction {
 
 pub enum Action {
     NewTransaction(Transaction),
+    DisplayTransactionFinished,
     DisplayTransaction,
 }
-
-// pub enum TransactionStatus {
-//     Resolve,
-//     Withdrawal,
-//     Chargeback,
-//     None,
-// }
 
 #[derive(Debug, Serialize)]
 pub enum TransactionType {

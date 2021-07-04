@@ -1,40 +1,42 @@
 use crate::traits::{TransactionDB, TransactionHandler};
 use crate::types::{Action, ClientAccount, Transaction, TransactionType};
 use std::option::Option::Some;
-use tokio::sync::mpsc::Receiver;
+use tokio::sync::mpsc::{Receiver, Sender};
 
 pub struct TransactionService<T> {
     pub(crate) db_adapter: T,
 }
 
 impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T> {
-    pub async fn receive(mut self, mut rcv: Receiver<Action>) {
+    pub async fn receive(mut self, mut rcv: Receiver<Action>, status_sender: Sender<Action>) {
         loop {
-            if let Some(transaction) = rcv.recv().await {
-                match transaction {
-                    Action::NewTransaction(transaction) => match transaction.transaction_type {
-                        TransactionType::Dispute => {
-                            self.dispute(transaction.tx);
-                        }
-                        TransactionType::Deposit => {
-                            self.deposit(transaction);
-                        }
-                        TransactionType::Resolve => {
-                            self.resolve(transaction.tx);
-                        }
-                        TransactionType::Withdrawal => {
-                            self.withdrawal(transaction);
-                        }
-                        TransactionType::Chargeback => {
-                            self.chargeback(transaction.tx)
-                        }
-                    },
+            while let Some(action) = rcv.recv().await {
+                match action {
+                        Action::NewTransaction(transaction) => match transaction.transaction_type {
+                            TransactionType::Dispute => {
+                                self.dispute(transaction.tx);
+                            }
+                            TransactionType::Deposit => {
+                                self.deposit(transaction);
+                            }
+                            TransactionType::Resolve => {
+                                self.resolve(transaction.tx);
+                            }
+                            TransactionType::Withdrawal => {
+                                self.withdrawal(transaction);
+                            }
+                            TransactionType::Chargeback => {
+                                self.chargeback(transaction.tx)
+                            }
+                        },
                     Action::DisplayTransaction => {
                         self.db_adapter.display_all_accounts();
+                        status_sender.send(Action::DisplayTransactionFinished).await.ok();
                     }
+                    _ => {}
+                }
                 }
             }
-        }
     }
 }
 
