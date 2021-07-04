@@ -35,8 +35,8 @@ impl<T: 'static + TransactionDB + std::marker::Sync + Send> TransactionService<T
                     }
                     _ => {}
                 }
-                }
             }
+        }
     }
 }
 
