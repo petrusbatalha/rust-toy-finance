@@ -51,16 +51,18 @@ impl<T: 'static + TransactionDB + AccountDB> TransactionHandler for TransactionS
         match self.db_adapter.get_transaction(id) {
             None => {}
             Some(transaction_to_be_disputed) => {
-                let mut client_account = self
-                    .db_adapter
-                    .get_account(transaction_to_be_disputed.client)
-                    .unwrap();
-                client_account.available -= transaction_to_be_disputed.amount.unwrap();
-                client_account.held += transaction_to_be_disputed.amount.unwrap();
-                self.db_adapter
-                    .add_account(client_account.client, client_account);
-                self.db_adapter
-                    .add_transaction_under_dispute(id, transaction_to_be_disputed);
+                if transaction_to_be_disputed.client == transaction.client {
+                    let mut client_account = self
+                        .db_adapter
+                        .get_account(transaction_to_be_disputed.client)
+                        .unwrap();
+                    client_account.available -= transaction_to_be_disputed.amount.unwrap();
+                    client_account.held += transaction_to_be_disputed.amount.unwrap();
+                    self.db_adapter
+                        .add_account(client_account.client, client_account);
+                    self.db_adapter
+                        .add_transaction_under_dispute(id, transaction_to_be_disputed);
+                }
             }
         }
     }
@@ -68,15 +70,17 @@ impl<T: 'static + TransactionDB + AccountDB> TransactionHandler for TransactionS
     fn chargeback(&mut self, transaction: Transaction) {
         let id = transaction.tx;
         if let Some(dispute) = self.db_adapter.get_transaction_under_dispute(id) {
-            match self.db_adapter.get_account(transaction.client) {
-                None => {}
-                Some(mut client_account) => {
-                    client_account.held -= dispute.amount.unwrap();
-                    client_account.total -= dispute.amount.unwrap();
-                    client_account.locked = true;
-                    self.db_adapter
-                        .add_account(client_account.client, client_account);
-                    self.db_adapter.remove_transaction_from_dispute(id)
+            if transaction.client == dispute.client {
+                match self.db_adapter.get_account(transaction.client) {
+                    None => {}
+                    Some(mut client_account) => {
+                        client_account.held -= dispute.amount.unwrap();
+                        client_account.total -= dispute.amount.unwrap();
+                        client_account.locked = true;
+                        self.db_adapter
+                            .add_account(client_account.client, client_account);
+                        self.db_adapter.remove_transaction_from_dispute(id)
+                    }
                 }
             }
         }
