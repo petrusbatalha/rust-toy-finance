@@ -1,6 +1,6 @@
 use serde::{Deserialize, Deserializer, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClientAccount {
     pub(crate) client: u16,
     pub available: f32,
@@ -24,7 +24,12 @@ pub struct Transaction {
     pub transaction_type: TransactionType,
     pub client: u16,
     pub tx: u32,
+    #[serde(default = "default_resource")]
     pub amount: Option<f32>,
+}
+
+fn default_resource() -> Option<f32> {
+    Some(0.0000)
 }
 
 pub enum Action {

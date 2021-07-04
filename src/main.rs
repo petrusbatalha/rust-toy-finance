@@ -1,12 +1,12 @@
 #![feature(in_band_lifetimes)]
 #![feature(num_as_ne_bytes)]
 
-mod sled_adapter;
+mod map_adapter;
 mod traits;
 mod transaction_service;
 mod types;
 
-use crate::sled_adapter::SledAdapter;
+use crate::map_adapter::MapAdapter;
 use crate::transaction_service::TransactionService;
 use crate::types::{Action, Transaction};
 use csv::Trim;
@@ -27,7 +27,7 @@ async fn main() {
 
     let (transaction_sender, transaction_receiver) = mpsc::channel(256);
 
-    let db_adapter = SledAdapter::new();
+    let db_adapter = MapAdapter::new();
     let transaction_service = TransactionService { db_adapter };
 
     let finished = Arc::new(AtomicBool::new(false));
@@ -53,6 +53,7 @@ async fn main() {
 
     while rdr.read_record(&mut raw_record).unwrap() {
         let record: Transaction = raw_record.deserialize(Some(&headers)).unwrap();
+
         match transaction_sender.send(Action::NewTransaction(record)).await {
             Ok(_) => {}
             Err(err) => {

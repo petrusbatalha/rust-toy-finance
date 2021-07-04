@@ -9,7 +9,6 @@ pub trait TransactionHandler {
 }
 
 pub trait TransactionDB {
-    type DbError;
     fn add_account(&mut self, client_id: u16, client_account: ClientAccount);
     fn add_transaction(&mut self, tx_id: u32, transaction: Transaction);
     fn remove_transaction_from_dispute(&mut self, tx_id: u32);
